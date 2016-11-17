@@ -2,6 +2,9 @@ package dotsub.fileupload.controller;
 
 import dotsub.fileupload.service.StorageFileNotFoundException;
 import dotsub.fileupload.service.StorageService;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -18,6 +21,7 @@ import java.util.stream.Collectors;
 
 @Controller
 public class FileUploadController {
+	private static final Logger LOG = LoggerFactory.getLogger(FileUploadController.class);
 
     private final StorageService storageService;
 
@@ -26,6 +30,13 @@ public class FileUploadController {
         this.storageService = storageService;
     }
 
+    /**
+     * Called after upload is submitted to show the files with download links. 
+     * 
+     * @param model
+     * @return
+     * @throws IOException
+     */
     @GetMapping("/")
     public String listUploadedFiles(Model model) throws IOException {
 
@@ -40,6 +51,12 @@ public class FileUploadController {
         return "uploadForm";
     }
 
+    /**
+     * Downloads a file selected from the list.
+     * 
+     * @param filename The filename
+     * @return
+     */
     @GetMapping("/files/{filename:.+}")
     @ResponseBody
     public ResponseEntity<Resource> serveFile(@PathVariable String filename) {
@@ -51,6 +68,16 @@ public class FileUploadController {
                 .body(file);
     }
 
+    /**
+     * Handles form submission including the file upload
+     * 
+     * @param file
+     * @param title
+     * @param description
+     * @param creationDate
+     * @param redirectAttributes
+     * @return
+     */
     @PostMapping("/")
     public String handleFileUpload(@RequestParam("file") MultipartFile file,
     								@RequestParam("title") String title,
@@ -61,14 +88,21 @@ public class FileUploadController {
         storageService.store(file);
         redirectAttributes.addFlashAttribute("message",
                 "You successfully uploaded " + file.getOriginalFilename() + "!");
-        System.out.println("Title: " + title);
-        System.out.println("Desc: " + description);
-        System.out.println("Creation date: " + creationDate);
+        LOG.debug("Title: " + title);
+        LOG.debug("Desc: " + description);
+        LOG.debug("Creation date: " + creationDate);
+        
         return "redirect:/";
     }
 
+    /**
+     * Takes care of StorageFileNotFoundException exceptions.
+     * 
+     * @param exc
+     * @return
+     */
     @ExceptionHandler(StorageFileNotFoundException.class)
-    public ResponseEntity handleStorageFileNotFound(StorageFileNotFoundException exc) {
+    public ResponseEntity<Void> handleStorageFileNotFound(StorageFileNotFoundException exc) {
         return ResponseEntity.notFound().build();
     }
 
