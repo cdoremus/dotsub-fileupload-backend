@@ -1,10 +1,13 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
 <style>
+body {
+  width: 800px;
+}
 .container {
   width: 600px;
   display: flex;
-  flex-diirection: column;
+  flex-direction: column;
   justify-content: center;
 }
 
@@ -21,7 +24,7 @@
 			<table>
 				<tr><td>Title:</td><td><input type="text" name="title" /></td></tr>				
 				<tr><td>Description:</td><td><input type="text" name="description" /></td></tr>				
-				<tr><td>Creation date:</td><td><input type="date" name="creationDate" /></td></tr>				
+				<tr><td>Creation date:</td><td><input type="date" name="creationDate" /></td></tr>	
 				<tr><td>File to upload:</td><td><input type="file" name="file" /></td></tr>
 				<tr><td></td><td><input type="submit" value="Upload" /></td></tr>
 			</table>
