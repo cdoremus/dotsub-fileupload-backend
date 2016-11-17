@@ -11,6 +11,10 @@ body {
   justify-content: center;
 }
 
+.uploaded {
+	width: 600px;
+}
+
 </style>
 </head>
 <body>
@@ -31,7 +35,8 @@ body {
 		</form>
 	</div>
 
-	<div>
+	<div class="uploaded">
+		<h3>Files Uploaded</h3>
 		<ul>
 			<li th:each="file : ${files}">
 				<a th:href="${file}" th:text="${file}" />
