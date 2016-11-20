@@ -7,8 +7,12 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+
 @Entity
-public class FileUploadData implements Serializable {
+public class FileUploadMetadata implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	
@@ -24,10 +28,10 @@ public class FileUploadData implements Serializable {
 	
 	private String creationDate = LocalDate.now().toString();
 	
-	public FileUploadData() {
+	public FileUploadMetadata() {
 	}
 
-	public FileUploadData(String title, String description, String filename, String creationDate) {
+	public FileUploadMetadata(String title, String description, String filename, String creationDate) {
 		this.title = title;
 		this.description = description;
 		this.filename = filename;
@@ -74,5 +78,20 @@ public class FileUploadData implements Serializable {
 		this.creationDate = creationDate;
 	}
 	
+	@Override
+	public int hashCode() {
+		return HashCodeBuilder.reflectionHashCode(this);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		return EqualsBuilder.reflectionEquals(this, obj);
+	}
+
+	@Override
+	public String toString() {
+		return ToStringBuilder.reflectionToString(this);
+	}
+
 	
 }
