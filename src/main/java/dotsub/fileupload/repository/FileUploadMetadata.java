@@ -26,7 +26,7 @@ public class FileUploadMetadata implements Serializable {
 	
 	private String filename;
 	
-	private String creationDate = LocalDate.now().toString();
+	private String createDate = LocalDate.now().toString();
 	
 	public FileUploadMetadata() {
 	}
@@ -35,7 +35,7 @@ public class FileUploadMetadata implements Serializable {
 		this.title = title;
 		this.description = description;
 		this.filename = filename;
-		this.creationDate = creationDate;
+		this.createDate = creationDate;
 	}
 	
 	public Long getId() {
@@ -70,12 +70,12 @@ public class FileUploadMetadata implements Serializable {
 		this.filename = filename;
 	}
 
-	public String getCreationDate() {
-		return creationDate;
+	public String getCreateDate() {
+		return createDate;
 	}
 
-	public void setCreationDate(String creationDate) {
-		this.creationDate = creationDate;
+	public void setCreateDate(String creationDate) {
+		this.createDate = creationDate;
 	}
 	
 	@Override
