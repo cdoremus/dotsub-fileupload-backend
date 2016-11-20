@@ -4,9 +4,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface FileUploadRepository extends JpaRepository<FileUploadData, Long> {
+public interface FileUploadMetatdataRepository extends JpaRepository<FileUploadMetadata, Long> {
 
-	FileUploadData findByTitle(String title);
+	FileUploadMetadata findByTitle(String title);
 
-	FileUploadData findByFilename(String fileName);
+	FileUploadMetadata findByFilename(String fileName);
 }
