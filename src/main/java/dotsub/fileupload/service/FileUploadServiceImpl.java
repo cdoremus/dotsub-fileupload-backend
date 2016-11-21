@@ -1,15 +1,19 @@
 package dotsub.fileupload.service;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -23,10 +27,14 @@ public class FileUploadServiceImpl implements FileUploadService {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(FileUploadServiceImpl.class);
 	private final FileUploadMetatdataRepository repository;
-	
+	// set upload dir and path
+	private final String UPLOAD_DIR = "upload-dir";
+	private final Path rootLocation;
+	 
 	@Autowired
 	public FileUploadServiceImpl(FileUploadMetatdataRepository repository) {
 		this.repository = repository;
+		this.rootLocation = Paths.get(UPLOAD_DIR);
 	}
 
 	@Override
@@ -36,9 +44,9 @@ public class FileUploadServiceImpl implements FileUploadService {
 		}
 		String filename = file.getOriginalFilename();
 		LOG.info(String.format("Uploading file: %s", filename));
-    	// upload to home directory
-    	String homeDir = System.getProperty("user.home");
-    	Path path = FileSystems.getDefault().getPath(homeDir, filename);
+		
+    	Path path = this.rootLocation.resolve(filename);
+    	LOG.info(String.format("File upload path: %s", path));
         try {
         	// allow overwriting of existing file
         	Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
@@ -48,10 +56,6 @@ public class FileUploadServiceImpl implements FileUploadService {
         
         FileUploadMetadata metadata = new FileUploadMetadata();
         metadata.setFilename(filename);
-        // TODO: ???? Delete old record for a file that you are overwriting
-        //	1. Find record by filename
-        //	2. Delete record
-        //	3. Save new record
         return repository.save(metadata);
 	}
 
@@ -115,5 +119,21 @@ public class FileUploadServiceImpl implements FileUploadService {
 			throw new FileUploadMetatadataRepositoryException(String.format("Problem deleting metadata with id: %d", id), e);
 		}
 	}
+
+    @Override
+    public Resource loadFileAsResource(String filename) {
+        try {
+            Path file = rootLocation.resolve(filename);
+            Resource resource = new UrlResource(file.toUri());
+            if(resource.exists() || resource.isReadable()) {
+                return resource;
+            } else {
+                throw new FileUploadException(String.format("Failed to load file %s", filename));
+            }
+        } catch (MalformedURLException e) {
+        	throw new FileUploadException(String.format("Failed to load file %s due to bad URL", filename), e);
+        }
+    }
+
 
 }

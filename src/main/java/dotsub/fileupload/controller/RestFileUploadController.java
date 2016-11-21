@@ -7,16 +7,19 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -58,15 +61,20 @@ public class RestFileUploadController {
 
 	@CrossOrigin(origins = { "*" })
 	@RequestMapping(value = "/saveData", method = { RequestMethod.POST })
-	public FileUploadMetadata saveMetatdata(@RequestParam("title") String title,
-			@RequestParam("description") String description, @RequestParam("filename") String filename,
+	public FileUploadMetadata saveMetatdata(
+			@RequestParam("id") long id,
+			@RequestParam("title") String title,
+			@RequestParam("description") String description, 
+			@RequestParam("filename") String filename,
 			@RequestParam("createDate") String createDate) {
-		LOG.info(String.format("Title: %s", title));
-		LOG.info(String.format("Description: %s", description));
-		LOG.info(String.format("Filename: %s", filename));
-		LOG.info(String.format("Create date: %s", createDate));
+//		LOG.info(String.format("ID: %d", id));
+//		LOG.info(String.format("Title: %s", title));
+//		LOG.info(String.format("Description: %s", description));
+//		LOG.info(String.format("Filename: %s", filename));
+//		LOG.info(String.format("Create date: %s", createDate));
 
 		FileUploadMetadata data = new FileUploadMetadata();
+		data.setId(id);
 		data.setTitle(title);
 		data.setDescription(description);
 		data.setFilename(filename);
@@ -93,6 +101,18 @@ public class RestFileUploadController {
 		return fileUploadService.findMetatdataByFilename(filename);
 	}
 
+	@CrossOrigin(origins = { "*" })
+	@RequestMapping(value = "/files/{filename:.+}", method = { RequestMethod.GET })
+    public ResponseEntity<Resource> serveFile(@PathVariable String filename) {
+
+        Resource file = fileUploadService.loadFileAsResource(filename);
+        return ResponseEntity
+                .ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\""+file.getFilename()+"\"")
+                .body(file);
+    }
+	
+	
 	/**
 	 * Takes care of FileUploadException and its subclass 
 	 * FileUploadMetatadataRepositoryException.
@@ -120,7 +140,8 @@ public class RestFileUploadController {
 	public ResponseEntity<Map<String, Object>> handleDataNotFoundException(DataNotFoundException e) {
 		return buildErrorResponse(e, HttpStatus.NOT_FOUND);
 	}
-
+	
+	
 	protected Map<String, Object> buildErrorMap(Throwable e, HttpStatus status) {
 		StringBuilder message = new StringBuilder(e.getMessage());
 		// Add message from cause if present
@@ -142,6 +163,7 @@ public class RestFileUploadController {
 		responseHeaders.setContentType(MediaType.APPLICATION_JSON);
 		return new ResponseEntity<>(buildErrorMap(e, status), responseHeaders, status);
 	}
+
 
 
 }

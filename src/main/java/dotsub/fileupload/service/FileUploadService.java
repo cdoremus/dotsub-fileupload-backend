@@ -2,6 +2,7 @@ package dotsub.fileupload.service;
 
 import java.util.List;
 
+import org.springframework.core.io.Resource;
 import org.springframework.web.multipart.MultipartFile;
 
 import dotsub.fileupload.repository.DataNotFoundException;
@@ -22,5 +23,6 @@ public interface FileUploadService {
 	
 	void deleteMetatdata(Long id) throws FileUploadMetatadataRepositoryException;
 	
+    public Resource loadFileAsResource(String filename) ;
 	
 }
