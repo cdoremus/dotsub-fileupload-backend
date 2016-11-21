@@ -10,6 +10,7 @@ buildscript {
 apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'spring-boot'
+apply plugin: 'checkstyle'
 
 jar {
     baseName = 'dotsub-fileupload'
@@ -35,3 +36,10 @@ dependencies {
     testCompile("org.springframework.boot:spring-boot-starter-test")
 }
 
+checkstyle {
+	configFile = new File(rootDir, "checkstyle.xml")
+ }
+
+ task wrapper(type: Wrapper) {
+	gradleVersion = '2.14.1'
+}
