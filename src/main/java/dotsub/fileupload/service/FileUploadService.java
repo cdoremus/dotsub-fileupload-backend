@@ -2,12 +2,16 @@ package dotsub.fileupload.service;
 
 import java.util.List;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import dotsub.fileupload.repository.DataNotFoundException;
 import dotsub.fileupload.repository.FileUploadMetadata;
 import dotsub.fileupload.repository.FileUploadMetatadataRepositoryException;
 
 public interface FileUploadService {
 
+	FileUploadMetadata uploadFile(MultipartFile file) throws FileUploadException;
+	
 	List<FileUploadMetadata> findAllMetatdata() throws FileUploadMetatadataRepositoryException, DataNotFoundException;
 	
 	FileUploadMetadata saveMetatdata(FileUploadMetadata data) throws FileUploadMetatadataRepositoryException;
