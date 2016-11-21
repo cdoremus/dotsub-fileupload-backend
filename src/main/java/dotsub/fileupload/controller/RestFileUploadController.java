@@ -14,12 +14,10 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -93,6 +91,14 @@ public class RestFileUploadController {
 		return fileUploadService.findMetatdataById(id);
 	}
 
+	@CrossOrigin(origins = { "*" })
+	@RequestMapping(value = "/delete/{id}", method = { RequestMethod.GET })
+	public ResponseEntity<String> deleteMetadata(@PathVariable("id") long id) {
+		LOG.info(String.format("Metatdata delete for id: %d", id));
+
+		return ResponseEntity.ok().body(String.format("Deleted metatdata with Id %d", id));
+	}
+	
 	@CrossOrigin(origins = { "*" })
 	@RequestMapping(value = "/findByFilename", method = { RequestMethod.GET })
 	public FileUploadMetadata findByFilename(@RequestParam("filename") String filename) {
