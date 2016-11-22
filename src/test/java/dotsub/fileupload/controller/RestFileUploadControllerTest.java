@@ -1,11 +1,9 @@
 package dotsub.fileupload.controller;
 
-import static org.junit.Assert.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 
@@ -21,17 +19,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
-import org.springframework.web.multipart.MultipartFile;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
@@ -79,7 +73,7 @@ public class RestFileUploadControllerTest {
 	}
 
 	@Test
-	@Ignore // TODO: Needs to be implemented
+	@Ignore // This needs to be correctly implemented
 	public void testHandleUpload() throws Exception {
         MockMultipartFile file = new MockMultipartFile("data", "testfile.txt", "text/plain", "some xml".getBytes());
 
@@ -131,9 +125,16 @@ public class RestFileUploadControllerTest {
 	}
 
 	@Test
-	@Ignore // TODO: Needs to be implemented
-	public void testServeFile() {
-		fail("Not yet implemented");
+	@SuppressWarnings("rawtypes" )
+	public void testServeFile() throws Exception {
+		String file = "testfile.txt";
+		Resource resource = Mockito.mock(Resource.class);		
+		given(service.loadFileAsResource(file)).willReturn(resource);
+		
+		ResponseEntity foundResouce = controller.serveFile(file);
+		
+		assertThat(foundResouce).isNotNull();
+		assertThat(foundResouce.getStatusCode()).isEqualTo(HttpStatus.OK);
 	}
 
 	@Test
