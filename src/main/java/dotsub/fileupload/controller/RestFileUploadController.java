@@ -154,7 +154,7 @@ public class RestFileUploadController {
 			message.append(e.getMessage());
 			// Add message from cause if present
 			if (e.getCause() != null) {
-				message.append(". ");
+				message.append("; nested exception is ");
 				message.append(e.getCause().getMessage());
 			}
 		}
