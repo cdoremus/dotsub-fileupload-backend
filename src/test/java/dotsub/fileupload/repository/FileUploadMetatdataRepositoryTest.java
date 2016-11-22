@@ -7,10 +7,14 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
+
+import dotsub.fileupload.TestConfig;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest
+@ContextConfiguration(classes=TestConfig.class)
 public class FileUploadMetatdataRepositoryTest {
 
     @Autowired
@@ -71,4 +75,26 @@ public class FileUploadMetatdataRepositoryTest {
     	assertThat(found.getTitle()).isEqualTo("title4");
     	
 	}
+
+    @Test
+	public void testCreateAndFindAndDeleteUsingRepositoryDeleteAndFindById() throws Exception {
+    	FileUploadMetadata data = new FileUploadMetadata("title4", "desc4", "file4.txt", "2016-11-04");
+    	FileUploadMetadata newData = repository.save(data);
+    	
+    	long id = newData.getId();
+    	
+    	assertThat(id > 0);
+    	
+    	FileUploadMetadata found = repository.findOne(id);
+    	
+    	assertThat(found.getTitle()).isEqualTo("title4");
+    	
+    	repository.delete(id);
+    	
+    	found = repository.findOne(id);
+    	
+    	// make sure it is deleted
+    	assertThat(found).isNull();
+	}
+    
 }
