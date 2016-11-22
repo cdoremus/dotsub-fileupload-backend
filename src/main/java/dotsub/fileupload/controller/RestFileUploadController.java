@@ -149,16 +149,19 @@ public class RestFileUploadController {
 	
 	
 	protected Map<String, Object> buildErrorMap(Throwable e, HttpStatus status) {
-		StringBuilder message = new StringBuilder(e.getMessage());
-		// Add message from cause if present
-		if (e.getCause() != null) {
-			message.append(". ");
-			message.append(e.getCause().getMessage());
+		StringBuilder message = new StringBuilder();		
+		if (e != null) {
+			message.append(e.getMessage());
+			// Add message from cause if present
+			if (e.getCause() != null) {
+				message.append(". ");
+				message.append(e.getCause().getMessage());
+			}
 		}
 		Map<String, Object> errorMap = new HashMap<>();
 		errorMap.put("timestamp", new Date().getTime());
-		errorMap.put("status", status.value());
-		errorMap.put("error", status.getReasonPhrase());
+		errorMap.put("status", status == null ? "" : status.value());
+		errorMap.put("error", status == null ? "" : status.getReasonPhrase());
 		errorMap.put("message", message.toString());
 		errorMap.put("path", "/uploadservice/*");
 		return errorMap;
