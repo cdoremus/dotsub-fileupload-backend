@@ -112,7 +112,7 @@ public class RestFileUploadControllerTest {
 			.param("createDate", today))
 			.andDo(print())
 			.andExpect(status().isOk())
-			.andExpect(content().json("{\"id\":0,\"title\":\"File title\",\"description\":\"File description\",\"filename\":\"Filename.png\",\"createDate\":\"2016-11-21\"}"));
+			.andExpect(content().json("{\"id\":0,\"title\":\"File title\",\"description\":\"File description\",\"filename\":\"Filename.png\",\"createDate\":\"" + today + "\"}"));
 	
 	}
 

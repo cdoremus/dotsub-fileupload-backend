@@ -5,8 +5,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -33,10 +36,17 @@ public class RestFileUploadController {
 
 	private FileUploadService fileUploadService;
 
+	@Autowired
 	public RestFileUploadController(FileUploadService fileUploadService) {
 		this.fileUploadService = fileUploadService;
 	}
 
+	/**
+	 * Upload a file and create a metadata record. 
+	 * 
+	 * @param uploadedFile
+	 * @return the created metadata file with id, file name, and creation date.
+	 */
 	@CrossOrigin(origins = { "*" }, 
 		methods={RequestMethod.POST, RequestMethod.OPTIONS},
 		allowedHeaders={"Origin", "X-Requested-With", "Content-Type", "Accept"})
@@ -49,6 +59,12 @@ public class RestFileUploadController {
 		return metadata;
 	}
 
+	
+	/**
+	 * Find all file upload metadata records.
+	 * 
+	 * @return all records in database
+	 */
 	@CrossOrigin(origins = { "*" })
 	@RequestMapping(value = "/findAll", method = RequestMethod.GET)
 	public List<FileUploadMetadata> findAll() {
@@ -57,6 +73,16 @@ public class RestFileUploadController {
 		return fileList;
 	}
 
+	/**
+	 * Save metadata of an uploaded file 
+	 * 
+	 * @param id metadata record id
+	 * @param title metadata title
+	 * @param description metadata description
+	 * @param filename name of the file
+	 * @param createDate date the metadata record was created
+	 * @return the record that was saved
+	 */
 	@CrossOrigin(origins = { "*" })
 	@RequestMapping(value = "/saveData", method = { RequestMethod.POST })
 	public FileUploadMetadata saveMetatdata(
@@ -71,18 +97,31 @@ public class RestFileUploadController {
 //		LOG.info(String.format("Filename: %s", filename));
 //		LOG.info(String.format("Create date: %s", createDate));
 
+		// validate required title and description
+		if (StringUtils.isBlank(title) || StringUtils.isBlank(description)) {
+			throw new FileUploadException("Title and Description cannot be empty or null");
+		}
+		
+		// save metadata
 		FileUploadMetadata data = new FileUploadMetadata();
 		data.setId(id);
-		data.setTitle(title);
-		data.setDescription(description);
-		data.setFilename(filename);
-		data.setCreateDate(createDate);
+		// escape input to prevent XSS
+		data.setTitle(StringEscapeUtils.escapeHtml4(title));
+		data.setDescription(StringEscapeUtils.escapeHtml4(description));
+		data.setFilename(StringEscapeUtils.escapeHtml4(filename));
+		data.setCreateDate(StringEscapeUtils.escapeHtml4(createDate));
 
 		fileUploadService.saveMetatdata(data);
 
 		return data;
 	}
 
+	/**
+	 * Find a file metadata record by id.
+	 * 
+	 * @param id the record id
+	 * @return
+	 */
 	@CrossOrigin(origins = { "*" })
 	@RequestMapping(value = "/find/{id}", method = { RequestMethod.GET })
 	public FileUploadMetadata findById(@PathVariable("id") long id) {
@@ -99,6 +138,14 @@ public class RestFileUploadController {
 		return ResponseEntity.ok().body(String.format("Deleted metatdata with Id %d", id));
 	}
 	
+	
+	/**
+	 * Find an uploaded file record by name.
+	 * 
+	 * @param filename name of the file whose record is searched for.
+	 * 
+	 * @return
+	 */
 	@CrossOrigin(origins = { "*" })
 	@RequestMapping(value = "/findByFilename", method = { RequestMethod.GET })
 	public FileUploadMetadata findByFilename(@RequestParam("filename") String filename) {
@@ -107,6 +154,15 @@ public class RestFileUploadController {
 		return fileUploadService.findMetatdataByFilename(filename);
 	}
 
+	/**
+	 * 
+	 * Serve up an uploaded file in upload-dir folder.
+	 * <p>
+	 * <strong>Note:</strong> .+ regex in URL prevents input from getting truncated. See SO answer here:
+	 * <a href="http://stackoverflow.com/a/16333149/3127468">http://stackoverflow.com/a/16333149/3127468</a> 
+	 * @param filename name of file to be served
+	 * @return
+	 */
 	@CrossOrigin(origins = { "*" })
 	@RequestMapping(value = "/files/{filename:.+}", method = { RequestMethod.GET })
     public ResponseEntity<Resource> serveFile(@PathVariable String filename) {
@@ -147,7 +203,27 @@ public class RestFileUploadController {
 		return buildErrorResponse(e, HttpStatus.NOT_FOUND);
 	}
 	
+	/**
+	 * Takes care of RuntimeException exceptions.
+	 * 
+	 * @param e
+	 *            exception thrown
+	 * @return ResponseEntity containing exception message and
+	 *         HttpStatus.INTERNAL_SERVER_ERROR.
+	 */
+	@ExceptionHandler(RuntimeException.class)
+	public ResponseEntity<Map<String, Object>> handleRuntimeException(RuntimeException e) {
+		return buildErrorResponse(e, HttpStatus.INTERNAL_SERVER_ERROR);
+	}
+
 	
+	/**
+	 * Build a Map to send back to the client as JSON if an error occurs.
+	 * 
+	 * @param e The error that occurred
+	 * @param status Http status code
+	 * @return
+	 */
 	protected Map<String, Object> buildErrorMap(Throwable e, HttpStatus status) {
 		StringBuilder message = new StringBuilder();		
 		if (e != null) {
@@ -167,6 +243,13 @@ public class RestFileUploadController {
 		return errorMap;
 	}
 
+	/**
+	 * Creates a response object containing JSON to send back to the client if an error occurs.
+	 * 
+	 * @param e The error that occurred
+	 * @param status Http status code
+	 * @return
+	 */
 	protected ResponseEntity<Map<String, Object>> buildErrorResponse(Throwable e, HttpStatus status) {
 		HttpHeaders responseHeaders = new HttpHeaders();
 		responseHeaders.setContentType(MediaType.APPLICATION_JSON);

@@ -9,6 +9,12 @@ import dotsub.fileupload.repository.DataNotFoundException;
 import dotsub.fileupload.repository.FileUploadMetadata;
 import dotsub.fileupload.repository.FileUploadMetatadataRepositoryException;
 
+/**
+ * 
+ * Defines service methods used by the <code>RestFileUploadController</code>
+ * to store and serve file uploads and obtain metatdata.
+ *
+ */
 public interface FileUploadService {
 
 	FileUploadMetadata uploadFile(MultipartFile file) throws FileUploadException;

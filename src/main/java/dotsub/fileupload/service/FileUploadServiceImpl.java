@@ -74,10 +74,10 @@ public class FileUploadServiceImpl implements FileUploadService {
 		try {
 			data = repository.findAll();
 		} catch (RuntimeException e) {
-			throw new FileUploadMetatadataRepositoryException("Problem finding all metadata", e);
+			throw new FileUploadMetatadataRepositoryException("Problem finding all metadata records", e);
 		}
 		if (data == null || data.isEmpty()) {
-			throw new DataNotFoundException(String.format("No file metadata found"));
+			throw new DataNotFoundException(String.format("No file metadata records found"));
 		}
 		return data;
 	}
@@ -91,7 +91,7 @@ public class FileUploadServiceImpl implements FileUploadService {
 			throw new FileUploadMetatadataRepositoryException(String.format("Problem finding metadata with id: %d", id), e);
 		}
 		if (data == null) {
-			throw new DataNotFoundException(String.format("Metatdata not found with id: %d", id));
+			throw new DataNotFoundException(String.format("Metatdata record not found with id: %d", id));
 		}
 		return data;
 	}
@@ -102,10 +102,10 @@ public class FileUploadServiceImpl implements FileUploadService {
 		try {
 			data = repository.findByFilename(filename);
 		} catch (RuntimeException e) {
-			throw new FileUploadMetatadataRepositoryException(String.format("Problem finding metadata by file name: %s", filename), e);
+			throw new FileUploadMetatadataRepositoryException(String.format("Problem finding metadata record by file name: %s", filename), e);
 		}
 		if (data == null) {
-			throw new DataNotFoundException(String.format("Metatdata not found with file name: %s", filename));
+			throw new DataNotFoundException(String.format("Metatdata record not found with file name: %s", filename));
 		}
 		return data;
 	}
@@ -115,7 +115,7 @@ public class FileUploadServiceImpl implements FileUploadService {
 		try {
 			repository.delete(id);;
 		} catch (RuntimeException e) {
-			throw new FileUploadMetatadataRepositoryException(String.format("Problem deleting metadata with id: %d", id), e);
+			throw new FileUploadMetatadataRepositoryException(String.format("Problem deleting metadata record with id: %d", id), e);
 		}
 	}
 
