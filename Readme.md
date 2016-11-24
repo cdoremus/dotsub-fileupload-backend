@@ -21,6 +21,9 @@ $ git clone https://github.com/cdoremus/dotsub-fileupload-backend.git
 # change directory
 $ cd dotsub-fileupload-backend
 
+# Create an upload-dir folder to hold the uploaded files
+mkdir upload-dir
+
 # build the application and start the embedded Tomcat server
 $ ./gradlew bootRun
 
@@ -31,11 +34,11 @@ At a high level, this application's request/response flow looks like this:
 
 RestFileUploadController -> FileUploadService -> FileUploadRepository
 
-Here are the details:
-* **RestFileUploadController - A Spring RestController that exposes web service endpoints to handle RESTful JSON requests and responses. Input validation is done to assure valid data and HTML escaping is done to prevent persistence of an XSS attack vector. This class also contains exception handler methods annotated with @ExceptionHandler. 
-* *FileUploadService* - service intermediary between the controller and repository. This interface is implemented by FileUploadServiceImpl. The implementation class catches RuntimeException and rethrows them as an Exception that can be handled one one of the controller's exception handlers.
-* *FileUploadRepository* - takes care of database persistence using Spring Data JPA
-* *FileUploadMetadata* - JPA entity object holding the uploaded file metadata. It is populated by the controller from the client request or received from the service via the repository class. The metatdata is passed back to clients using a JSON representation of this class.
+Here are the details
+- *RestFileUploadController* - A Spring RestController that exposes web service endpoints to handle RESTful JSON requests and responses. Input validation is done to assure valid data and HTML escaping is done to prevent persistence of an XSS attack vector. This class also contains exception handler methods annotated with @ExceptionHandler. 
+- *FileUploadService* - service intermediary between the controller and repository. This interface is implemented by FileUploadServiceImpl. The implementation class catches RuntimeException and rethrows them as an Exception that can be handled one one of the controller's exception handlers.
+- *FileUploadRepository* - takes care of database persistence using Spring Data JPA
+- *FileUploadMetadata* - JPA entity object holding the uploaded file metadata. It is populated by the controller from the client request or received from the service via the repository class. The metatdata is passed back to clients using a JSON representation of this class.
 
 ### Web Service Endpoints
 The web service is currently configured to serve endpoints at the http://localhost:8080 URL.
