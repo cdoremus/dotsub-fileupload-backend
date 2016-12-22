@@ -1,7 +1,7 @@
-## Web Service Endpoints for Angular 2 File Upload Form Application using Spring Boot and Spring Rest Controller
+## Web Service Endpoints for Angular 2 and React File Upload Form Application using Spring Boot and Spring Rest Controller
 
 
-This project is a standalone web service used by the Angular 2 client to upload files to a server and save metatdata about uploaded files in a database. 
+This project is a standalone web service used by the Angular 2 and React client to upload files to a server and save metatdata about uploaded files in a database. 
 
 ### Technologies used
 - Gradle for building the app, running the embedded server and running tests and other checks
@@ -16,10 +16,10 @@ This project is a standalone web service used by the Angular 2 client to upload 
 
 ```bash
 # clone this repo
-$ git clone https://github.com/cdoremus/dotsub-fileupload-backend.git
+$ git clone https://github.com/cdoremus/fileupload-demo-backend.git
 
 # change directory
-$ cd dotsub-fileupload-backend
+$ cd fileupload-demo-backend
 
 # Create an upload-dir folder to hold the uploaded files
 mkdir upload-dir
@@ -45,7 +45,7 @@ The web service is currently configured to serve endpoints at the http://localho
  * /uploadservice/upload - for uploading a file and creating a metadata record in the database. The new record is returned as JSON including the record id, filename and creation date.
  * /uploadservice/findAll - for finding all metatdata records. A JSON array of records is returned
 * /uploadservice/saveData - for saving an uploaded file's record. After it is persisted, the saved record is returned as JSON.
- * /uploadservice/files/{filename:.+} - for serving an uploaded file to be downloaded by the user of the Angular 2 client.
+ * /uploadservice/files/{filename:.+} - for serving an uploaded file to be downloaded by the user of the Angular 2 or React client.
  * /uploadservice/find/{id} - for finding an uploaded file's record by record id.
  * /uploadservice/findByFilename/ - for finding an uploaded file's record by filename.
 
